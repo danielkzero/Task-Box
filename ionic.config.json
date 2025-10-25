@@ -1,0 +1,7 @@
+{
+  "name": "TaskHydraDigital",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
