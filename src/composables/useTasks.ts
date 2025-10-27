@@ -25,11 +25,11 @@ export function useTasks(selectedListId: any) {
       });
     }
 
-    // 🔹 Mantém a ordem original (do banco/localStorage) se for "order"
+    // Mantém a ordem original (do banco/localStorage) se for "order"
     return [...tasks.value];
   });
 
-  // 🔹 Tarefas derivadas, mas mantendo a ordenação de sortedTasks
+  // Tarefas derivadas, mas mantendo a ordenação de sortedTasks
   const pendingTasks = computed(() =>
     sortedTasks.value.filter(t => !t.done)
   );
