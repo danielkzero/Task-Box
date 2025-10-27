@@ -57,7 +57,10 @@ import {
   IonCardSubtitle,
   IonCardContent,
   IonCardTitle,
-  IonFooter
+  IonFooter,
+  IonAccordion,
+  IonAccordionGroup,
+  IonBadge
 } from "@ionic/vue";
 
 // Ionic Icons
@@ -67,6 +70,12 @@ import {
   ellipsisVerticalOutline,
   addOutline,
   informationCircleOutline,
+  createOutline,
+  trashOutline,
+  closeOutline,
+  checkmarkDoneOutline,
+  listOutline,
+  calendarOutline
 } from "ionicons/icons";
 
 // Registra ícones globalmente
@@ -75,6 +84,12 @@ addIcons({
   "ellipsis-vertical-outline": ellipsisVerticalOutline,
   "add-outline": addOutline,
   "information-circle-outline": informationCircleOutline,
+  "create-outline": createOutline,
+  "trash-outline": trashOutline,
+  "close-outline": closeOutline,
+  "checkmark-done-outline": checkmarkDoneOutline,
+  "list-outline": listOutline,
+  "calendar-outline": calendarOutline
 });
 
 // Notificações do capacitor
@@ -116,7 +131,10 @@ const app = createApp(App)
   .component("IonCardTitle", IonCardTitle)
   .component("IonCardSubtitle", IonCardSubtitle)
   .component("IonCardContent", IonCardContent)
-  .component("IonFooter", IonFooter);
+  .component("IonFooter", IonFooter)
+  .component("IonAccordion", IonAccordion)
+  .component("IonAccordionGroup", IonAccordionGroup)
+  .component("IonBadge", IonBadge);
 
   
 
