@@ -44,9 +44,9 @@
                         </ion-label>
                     </ion-item>
                     <!-- Informativo caso não tenha tarefas -->
-                    <EmptyState v-if="sortedTasks.length === 0" image="/9276414.jpg" alt="Sem tarefas"
+                    <EmptyState v-if="pendingTasks.length === 0" image="/9276414.jpg" alt="Sem tarefas"
                         title="Parece que essa lista está vazia...">
-                        Que tal criar sua primeira tarefa agora? <br> Clique no <strong>+</strong> e comece a se
+                        Que tal criar uma tarefa agora? <br> Clique no <strong>+</strong> e comece a se
                         organizar!
                     </EmptyState>
                 </ion-list>
