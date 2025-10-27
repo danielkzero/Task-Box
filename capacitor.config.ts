@@ -1,9 +1,10 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'TaskHydraDigital',
-  webDir: 'dist'
+  appId: "com.hydradigital.taskbox.app",
+  appName: "Task Box",
+  webDir: "dist",
+  bundledWebRuntime: false,
 };
 
 export default config;
