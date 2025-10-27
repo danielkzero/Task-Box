@@ -14,7 +14,7 @@ export class TaskDB extends Dexie {
     this.version(8).stores({
       tasks: "++id,title,done,listId,createdAt,scheduledFor",
       lists: "++id,name",
-      taskDetails: "++id,taskId,content,createdAt"
+      taskDetails: "++id,taskId,content,createdAt",
     });
   }
 }
