@@ -119,7 +119,7 @@ import moment from 'moment';
 const router = useRouter();
 
 const { lists, selectedListId, currentListName, loadLists, selectList } = useTaskLists();
-const { tasks, sortedTasks, sortMode, loadTasks, toggle, addTask, updateTask, deleteCompleted } = useTasks(selectedListId);
+const { tasks, sortedTasks, sortMode, loadTasks, toggle, addTask, deleteCompleted } = useTasks(selectedListId);
 const pendingTasks = computed(() => sortedTasks.value.filter(t => !t.done));
 const completedTasks = computed(() => sortedTasks.value.filter(t => t.done));
 
