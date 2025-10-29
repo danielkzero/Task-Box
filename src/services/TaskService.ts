@@ -4,6 +4,7 @@ import { Task } from "@/models/Task";
 import { TaskList } from "@/models/TaskList";
 import { TaskDetails } from "@/models/TaskDetails";
 import { LocalNotifications } from "@capacitor/local-notifications";
+import moment from "moment";
 
 export class TaskDB extends Dexie {
   tasks!: Table<Task, number>;
@@ -57,23 +58,11 @@ export class TaskService {
   async addTask(task: Task) {
     const id = await this.db.tasks.add(task);
 
-    // agenda notificação se tiver data
-    if (task.scheduledFor) {
-      const date = new Date(task.scheduledFor);
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            id: id,
-            title: "Lembrete Task Box",
-            body: `📅 ${task.title}`,
-            schedule: { at: date },
-          },
-        ],
-      });
-    }
+    await this.scheduleNotification(task, id);
 
     return id;
   }
+
   // Alterar uma tarefa
   async updateTask(task: Task) {
     const plain = {
@@ -83,8 +72,20 @@ export class TaskService {
       listId: task.listId,
       createdAt: task.createdAt,
       scheduledFor: task.scheduledFor,
+      remindBefore: task.remindBefore,
+      repeatEvery: task.repeatEvery,
+      priority: task.priority,
     };
-    return this.db.tasks.put(plain);
+
+    const updatedId = await this.db.tasks.put(plain);
+
+    // Cancelar notificação antiga (se existir)
+    await LocalNotifications.cancel({ notifications: [{ id: task.id! }] });
+
+    // Re-agendar somente se a data for futura
+    await this.scheduleNotification(task, task.id!);
+
+    return updatedId;
   }
   // Excluir uma tarefa
   async deleteTask(id: number) {
@@ -127,5 +128,32 @@ export class TaskService {
   // Deletar detalhes de uma tarefa
   async deleteTaskDetail(id: number) {
     return this.db.table("taskDetails").delete(id);
+  }
+
+  // Função helper para agendar notificação
+  private async scheduleNotification(task: Task, id: number) {
+    if (!task.scheduledFor) return;
+
+    const now = new Date();
+    const scheduled = moment(task.scheduledFor).local().toDate();
+    const date = new Date(
+      scheduled.getTime() - (task.remindBefore ?? 15) * 60000
+    );
+
+    // Não agenda se a data já passou
+    if (date <= now) return;
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: id,
+          title: "Lembrete",
+          body: `📅 ${task.title}`,
+          schedule: { at: date, repeats: !!task.repeatEvery, every: "minute" },
+          sound: "assets/sounds/bell.wav",
+          smallIcon: "res://icon",
+        },
+      ],
+    });
   }
 }

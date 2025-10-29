@@ -1,5 +1,7 @@
 import moment from 'moment';
-import { TaskDetails } from './TaskDetails';
+
+export type Priority = 'Urgente' | 'Importante' | 'Normal';
+
 export class Task {
   constructor(
     public id?: number,
@@ -7,7 +9,10 @@ export class Task {
     public done: boolean = false,
     public listId?: number, 
     public createdAt: Date = moment(new Date()).local().toDate(),
-    public scheduledFor?: Date
+    public scheduledFor?: Date,
+    public remindBefore?: number, 
+    public repeatEvery?: number, 
+    public priority: Priority = 'Normal'
   ) {}
 }
 

@@ -32,4 +32,16 @@ export const versionNotes: VersionNote[] = [
     ],
     createdAt: moment("2025-10-27").toDate()
   },
+  {
+    id: 3,
+    versao: '1.2',
+    notas: [
+      'Agrupamento por datas: HOJE, AMANHÃ e DIAS DA SEMANA.',
+      'Adicionado agrupamento de DATAS PASSADAS.',
+      'Alteração na forma de cadastro e edição por MODAL.',
+      'Alteração para ordenação Ascendente/Descendente.',
+      'Adicionado agendamento de Data, Hora, Avisar com antecedência e Repetir a cada X minutos.',
+    ],
+    createdAt: moment("2025-10-29").toDate()
+  },
 ];

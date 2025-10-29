@@ -60,7 +60,9 @@ import {
   IonFooter,
   IonAccordion,
   IonAccordionGroup,
-  IonBadge
+  IonBadge,
+  IonModal,
+  IonTextarea
 } from "@ionic/vue";
 
 // Ionic Icons
@@ -75,7 +77,8 @@ import {
   closeOutline,
   checkmarkDoneOutline,
   listOutline,
-  calendarOutline
+  calendarOutline,
+  alertCircleOutline
 } from "ionicons/icons";
 
 // Registra ícones globalmente
@@ -89,7 +92,8 @@ addIcons({
   "close-outline": closeOutline,
   "checkmark-done-outline": checkmarkDoneOutline,
   "list-outline": listOutline,
-  "calendar-outline": calendarOutline
+  "calendar-outline": calendarOutline,
+  "alert-circle-outline": alertCircleOutline
 });
 
 // Notificações do capacitor
@@ -104,6 +108,14 @@ async function requestNotificationPermission() {
   }
 }
 requestNotificationPermission();
+
+LocalNotifications.addListener(
+  'localNotificationActionPerformed',
+  (notification) => {
+    const taskId = notification.notification.id;
+    router.push(`/detalhes-tarefa/${taskId}`);
+  }
+);
 
 
 const app = createApp(App)
@@ -134,7 +146,9 @@ const app = createApp(App)
   .component("IonFooter", IonFooter)
   .component("IonAccordion", IonAccordion)
   .component("IonAccordionGroup", IonAccordionGroup)
-  .component("IonBadge", IonBadge);
+  .component("IonBadge", IonBadge)
+  .component("IonModal", IonModal)
+  .component("IonTextarea", IonTextarea);
 
   
 

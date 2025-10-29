@@ -23,7 +23,7 @@
                     </ion-card-title>
                     <ion-card-subtitle>
                         Criada: {{ formatDate(task?.createdAt) }}
-                        <span v-if="task?.scheduledFor"> | Agendada: {{ formatDate(task?.scheduledFor) }}</span>
+                        <span v-if="task?.scheduledFor"> | Agendada: {{ formatDateTime(task?.scheduledFor) }}</span>
                     </ion-card-subtitle>
                 </ion-card-header>
                 <ion-card-content>
@@ -50,6 +50,10 @@
                 </ion-card-content>
             </ion-card>
         </ion-content>
+
+        <EditTaskModal v-model:isOpen="isEditTaskOpen" :task="task" @saved="handleTaskSave" />
+
+        <EditDetailModal v-model:isOpen="isDetailModalOpen" :detail="selectedDetail" @saved="handleDetailSave" />
     </ion-page>
 </template>
 
@@ -61,7 +65,19 @@ import { TaskService } from '@/services/TaskService';
 import { Task } from '@/models/Task';
 import { TaskDetails } from '@/models/TaskDetails';
 import { actionSheetController } from '@ionic/vue';
-import { formatDate } from '@/utils/formatDate';
+import { formatDate, formatDateTime } from '@/utils/formatDate';
+import moment from 'moment';
+
+
+import EditTaskModal from '@/components/modals/EditTaskModal.vue'
+import EditDetailModal from '@/components/modals/EditDetailModal.vue'
+
+const isEditTaskOpen = ref(false)
+const isDetailModalOpen = ref(false)
+const selectedDetail = ref<TaskDetails | null>(null)
+
+
+
 
 const route = useRoute();
 const router = useRouter();
@@ -86,9 +102,9 @@ async function openTaskActions() {
     // Mostra "Renomear" apenas se a tarefa NÃO estiver concluída
     if (!task.value?.done) {
         buttons.push({
-            text: 'Renomear',
+            text: 'Editar',
             icon: 'create-outline',
-            handler: () => renameTaskPrompt()
+            handler: () => editTaskPrompt()
         });
     }
 
@@ -114,23 +130,33 @@ async function openTaskActions() {
 }
 
 
-async function renameTaskPrompt() {
-    if (!task.value) return;
+function editTaskPrompt() {
+  isEditTaskOpen.value = true
+}
 
-    const alert = await alertController.create({
-        header: 'Renomear Tarefa',
-        inputs: [{ name: 'title', type: 'text', value: task.value.title }],
-        buttons: [
-            { text: 'Cancelar', role: 'cancel' },
-            {
-                text: 'Salvar', handler: async (data) => {
-                    task.value!.title = data.title;
-                    await service.updateTask(task.value!);
-                }
-            }
-        ]
-    });
-    await alert.present();
+async function handleTaskSave(updated: Task) {
+  if (!updated) return
+  await service.updateTask(updated)
+  task.value = updated
+}
+
+function addDetailPrompt() {
+  selectedDetail.value = new TaskDetails(undefined, taskId, '', new Date())
+  isDetailModalOpen.value = true
+}
+
+function editDetail(detail: TaskDetails) {
+  selectedDetail.value = detail
+  isDetailModalOpen.value = true
+}
+
+async function handleDetailSave(detail: TaskDetails) {
+  if (detail.id) {
+    await service.updateTaskDetail(detail)
+  } else {
+    await service.addTaskDetail(detail)
+  }
+  await loadDetails()
 }
 
 async function openDetailActions(detail: TaskDetails) {
@@ -177,41 +203,6 @@ async function deleteTask() {
     await alert.present();
 }
 
-async function addDetailPrompt() {
-    const alert = await alertController.create({
-        header: 'Novo detalhe',
-        inputs: [{ name: 'content', type: 'textarea', placeholder: 'Conteúdo', attributes: { rows: 5 } }],
-        buttons: [
-            { text: 'Cancelar', role: 'cancel' },
-            {
-                text: 'Adicionar', handler: async (data) => {
-                    const detail = new TaskDetails(undefined, taskId, data.content, new Date());
-                    await service.addTaskDetail(detail);
-                    await loadDetails();
-                }
-            }
-        ]
-    });
-    await alert.present();
-}
-
-async function editDetail(detail: TaskDetails) {
-    const alert = await alertController.create({
-        header: 'Editar detalhe',
-        inputs: [{ name: 'content', type: 'textarea', value: detail.content, attributes: { rows: 5 } }],
-        buttons: [
-            { text: 'Cancelar', role: 'cancel' },
-            {
-                text: 'Salvar', handler: async (data) => {
-                    detail.content = data.content;
-                    await service.updateTaskDetail(detail);
-                    await loadDetails();
-                }
-            }
-        ]
-    });
-    await alert.present();
-}
 
 async function deleteDetail(id: number) {
     await service.deleteTaskDetail(id);

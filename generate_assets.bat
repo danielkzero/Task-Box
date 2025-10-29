@@ -51,6 +51,7 @@ cd android
 
 echo Gerando apk
 call gradlew assembleRelease
+call gradlew bundleRelease
 cd..
 echo Concluído :)
 pause
