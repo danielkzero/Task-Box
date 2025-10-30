@@ -62,7 +62,9 @@ import {
   IonAccordionGroup,
   IonBadge,
   IonModal,
-  IonTextarea
+  IonTextarea,
+  IonSelectOption,
+  IonSelect
 } from "@ionic/vue";
 
 // Ionic Icons
@@ -78,7 +80,9 @@ import {
   checkmarkDoneOutline,
   listOutline,
   calendarOutline,
-  alertCircleOutline
+  alertCircleOutline,
+  calendarNumberOutline,
+  newspaperOutline
 } from "ionicons/icons";
 
 // Registra ícones globalmente
@@ -93,7 +97,9 @@ addIcons({
   "checkmark-done-outline": checkmarkDoneOutline,
   "list-outline": listOutline,
   "calendar-outline": calendarOutline,
-  "alert-circle-outline": alertCircleOutline
+  "alert-circle-outline": alertCircleOutline,
+  "calendar-number-outline": calendarNumberOutline,
+  "newspaper-outline": newspaperOutline
 });
 
 // Notificações do capacitor
@@ -148,7 +154,9 @@ const app = createApp(App)
   .component("IonAccordionGroup", IonAccordionGroup)
   .component("IonBadge", IonBadge)
   .component("IonModal", IonModal)
-  .component("IonTextarea", IonTextarea);
+  .component("IonTextarea", IonTextarea)
+  .component("IonSelectOption", IonSelectOption)
+  .component("IonSelect", IonSelect);
 
   
 

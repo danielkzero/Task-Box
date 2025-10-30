@@ -3,8 +3,8 @@
         <ion-header>
             <ion-toolbar color="primary">
                 <ion-title>
-                    <ion-icon name="create-outline"></ion-icon>
-                    Editar Tarefa
+                    <ion-icon name="calendar-number-outline"></ion-icon>
+                    Reagendar Tarefa
                 </ion-title>
                 <ion-buttons slot="end">
                     <ion-button @click="close">Fechar</ion-button>
@@ -14,11 +14,6 @@
 
         <ion-content class="ion-padding">
             <ion-list>
-                <ion-item>
-                    <ion-label position="stacked">Título</ion-label>
-                    <ion-input v-model="form.title" placeholder="Digite o título da tarefa" />
-                </ion-item>
-
                 <ion-item>
                     <ion-label position="stacked">Data</ion-label>
                     <ion-input v-model="form.date" type="date" />

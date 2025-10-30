@@ -1,6 +1,7 @@
+//models/Task.ts
 import moment from 'moment';
 
-export type Priority = 'Urgente' | 'Importante' | 'Normal';
+export type Priority = 'Urgente' | 'Importante' | 'Normal' | undefined; //<-- não estou usando ainda vai ser usado futuramente
 
 export class Task {
   constructor(
@@ -12,7 +13,8 @@ export class Task {
     public scheduledFor?: Date,
     public remindBefore?: number, 
     public repeatEvery?: number, 
-    public priority: Priority = 'Normal'
+    public priority?: Priority,
+    public idTaskParent?: number
   ) {}
 }
 

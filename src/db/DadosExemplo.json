@@ -1,0 +1,293 @@
+{
+  "lists": [
+    { "id": 1, "name": "Trabalho" },
+    { "id": 2, "name": "Casa" },
+    { "id": 3, "name": "Estudos" },
+    { "id": 4, "name": "Finanças" },
+    { "id": 5, "name": "Metas" }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Revisar relatório semanal",
+      "done": false,
+      "listId": 1,
+      "createdAt": "2025-10-25T09:30:00Z",
+      "scheduledFor": "2025-10-28T09:30:00Z"
+    },
+    {
+      "id": 2,
+      "title": "Testar nova versão do app Task Box",
+      "done": true,
+      "listId": 1,
+      "createdAt": "2025-10-22T14:00:00Z",
+      "scheduledFor": "2025-10-25T14:00:00Z"
+    },
+    {
+      "id": 3,
+      "title": "Limpar a cozinha",
+      "done": false,
+      "listId": 2,
+      "createdAt": "2025-10-26T11:00:00Z",
+      "scheduledFor": "2025-10-29T11:00:00Z"
+    },
+    {
+      "id": 4,
+      "title": "Lavar roupas",
+      "done": true,
+      "listId": 2,
+      "createdAt": "2025-10-24T08:00:00Z",
+      "scheduledFor": "2025-10-27T08:00:00Z"
+    },
+    {
+      "id": 5,
+      "title": "Estudar JavaScript",
+      "done": false,
+      "listId": 3,
+      "createdAt": "2025-10-26T12:30:00Z",
+      "scheduledFor": "2025-10-29T12:30:00Z"
+    },
+    {
+      "id": 6,
+      "title": "Ouvir podcast sobre produtividade",
+      "done": true,
+      "listId": 3,
+      "createdAt": "2025-10-23T15:00:00Z",
+      "scheduledFor": "2025-10-26T15:00:00Z"
+    },
+    {
+      "id": 7,
+      "title": "Fazer compras do mês",
+      "done": false,
+      "listId": 4,
+      "createdAt": "2025-10-25T19:00:00Z",
+      "scheduledFor": "2025-10-28T19:00:00Z"
+    },
+    {
+      "id": 8,
+      "title": "Pagar conta de energia",
+      "done": true,
+      "listId": 4,
+      "createdAt": "2025-10-17T09:00:00Z",
+      "scheduledFor": "2025-10-20T09:00:00Z"
+    },
+    {
+      "id": 9,
+      "title": "Caminhar 30 minutos",
+      "done": false,
+      "listId": 5,
+      "createdAt": "2025-10-26T07:00:00Z",
+      "scheduledFor": "2025-10-29T07:00:00Z"
+    },
+    {
+      "id": 10,
+      "title": "Ler livro 'O Poder do Hábito'",
+      "done": true,
+      "listId": 5,
+      "createdAt": "2025-10-12T21:00:00Z",
+      "scheduledFor": "2025-10-15T21:00:00Z"
+    },
+    {
+      "id": 11,
+      "title": "Preparar apresentação para reunião de equipe",
+      "done": false,
+      "listId": 1,
+      "createdAt": "2025-10-26T09:30:00Z",
+      "scheduledFor": "2025-10-29T13:30:00Z"
+    },
+    {
+      "id": 12,
+      "title": "Revisar documentação técnica do app",
+      "done": true,
+      "listId": 1,
+      "createdAt": "2025-10-24T09:00:00Z",
+      "scheduledFor": "2025-10-27T10:00:00Z"
+    },
+    {
+      "id": 13,
+      "title": "Organizar despensa",
+      "done": false,
+      "listId": 2,
+      "createdAt": "2025-10-26T08:00:00Z",
+      "scheduledFor": "2025-10-29T09:20:00Z"
+    },
+    {
+      "id": 14,
+      "title": "Trocar roupa de cama",
+      "done": true,
+      "listId": 2,
+      "createdAt": "2025-10-23T08:00:00Z",
+      "scheduledFor": "2025-10-26T08:30:00Z"
+    },
+    {
+      "id": 15,
+      "title": "Praticar exercícios de lógica de programação",
+      "done": false,
+      "listId": 3,
+      "createdAt": "2025-10-26T10:00:00Z",
+      "scheduledFor": "2025-10-29T14:00:00Z"
+    },
+    {
+      "id": 16,
+      "title": "Assistir vídeo sobre TypeScript",
+      "done": true,
+      "listId": 3,
+      "createdAt": "2025-10-25T15:00:00Z",
+      "scheduledFor": "2025-10-28T17:00:00Z"
+    },
+    {
+      "id": 17,
+      "title": "Planejar cardápio da semana",
+      "done": false,
+      "listId": 4,
+      "createdAt": "2025-10-26T10:00:00Z",
+      "scheduledFor": "2025-10-29T10:45:00Z"
+    },
+    {
+      "id": 18,
+      "title": "Pagar internet",
+      "done": true,
+      "listId": 4,
+      "createdAt": "2025-10-18T09:00:00Z",
+      "scheduledFor": "2025-10-21T09:30:00Z"
+    },
+    {
+      "id": 19,
+      "title": "Meditar por 10 minutos",
+      "done": false,
+      "listId": 5,
+      "createdAt": "2025-10-26T06:30:00Z",
+      "scheduledFor": "2025-10-29T06:45:00Z"
+    },
+    {
+      "id": 20,
+      "title": "Atualizar diário de leitura",
+      "done": true,
+      "listId": 5,
+      "createdAt": "2025-10-21T19:30:00Z",
+      "scheduledFor": "2025-10-24T20:00:00Z"
+    }
+  ],
+  "taskDetails": [
+    {
+      "id": 1,
+      "taskId": 1,
+      "content": "Atualizar números de vendas e enviar até 17h.",
+      "createdAt": "2025-10-28T09:45:00Z"
+    },
+    {
+      "id": 2,
+      "taskId": 2,
+      "content": "Verificar login, criação de tarefas e notificações — testes concluídos com sucesso.",
+      "createdAt": "2025-10-25T16:30:00Z"
+    },
+    {
+      "id": 3,
+      "taskId": 3,
+      "content": "Lavar louça, limpar fogão, passar pano e tirar o lixo.",
+      "createdAt": "2025-10-29T11:15:00Z"
+    },
+    {
+      "id": 4,
+      "taskId": 4,
+      "content": "Separar por cores e deixar secar até 17h.",
+      "createdAt": "2025-10-27T08:10:00Z"
+    },
+    {
+      "id": 5,
+      "taskId": 5,
+      "content": "Estudar funções assíncronas e promises — tempo estimado: 1h.",
+      "createdAt": "2025-10-29T12:45:00Z"
+    },
+    {
+      "id": 6,
+      "taskId": 6,
+      "content": "Episódio 42: 'Produtividade sem estresse'.",
+      "createdAt": "2025-10-26T15:10:00Z"
+    },
+    {
+      "id": 7,
+      "taskId": 7,
+      "content": "Lista: arroz, feijão, leite, frutas, sabão, detergente, papel higiênico.",
+      "createdAt": "2025-10-28T19:15:00Z"
+    },
+    {
+      "id": 8,
+      "taskId": 8,
+      "content": "Valor: R$120,00 — pago via app bancário às 10h.",
+      "createdAt": "2025-10-20T10:00:00Z"
+    },
+    {
+      "id": 9,
+      "taskId": 9,
+      "content": "Fazer caminhada leve às 18h ouvindo playlist relaxante.",
+      "createdAt": "2025-10-29T07:10:00Z"
+    },
+    {
+      "id": 10,
+      "taskId": 10,
+      "content": "Concluído capítulo 3 — anotar principais hábitos mencionados.",
+      "createdAt": "2025-10-17T22:00:00Z"
+    },
+    {
+      "id": 11,
+      "taskId": 11,
+      "content": "Criar slides no Canva e revisar pontos principais até às 16h.",
+      "createdAt": "2025-10-29T13:45:00Z"
+    },
+    {
+      "id": 12,
+      "taskId": 12,
+      "content": "Verificar se os endpoints da API estão devidamente documentados.",
+      "createdAt": "2025-10-27T10:15:00Z"
+    },
+    {
+      "id": 13,
+      "taskId": 13,
+      "content": "Separar alimentos vencidos e limpar prateleiras.",
+      "createdAt": "2025-10-29T09:30:00Z"
+    },
+    {
+      "id": 14,
+      "taskId": 14,
+      "content": "Trocar lençóis e fronhas, deixar arejar o quarto.",
+      "createdAt": "2025-10-26T08:40:00Z"
+    },
+    {
+      "id": 15,
+      "taskId": 15,
+      "content": "Resolver 5 exercícios sobre arrays e objetos.",
+      "createdAt": "2025-10-29T14:10:00Z"
+    },
+    {
+      "id": 16,
+      "taskId": 16,
+      "content": "Assistido o vídeo 'Entendendo Generics no TypeScript'.",
+      "createdAt": "2025-10-28T17:15:00Z"
+    },
+    {
+      "id": 17,
+      "taskId": 17,
+      "content": "Montar cardápio com base em alimentos já disponíveis.",
+      "createdAt": "2025-10-29T10:55:00Z"
+    },
+    {
+      "id": 18,
+      "taskId": 18,
+      "content": "Valor: R$89,90 — pago via débito automático.",
+      "createdAt": "2025-10-21T09:45:00Z"
+    },
+    {
+      "id": 19,
+      "taskId": 19,
+      "content": "Usar app de meditação e foco durante 10 minutos antes do café da manhã.",
+      "createdAt": "2025-10-29T07:00:00Z"
+    },
+    {
+      "id": 20,
+      "taskId": 20,
+      "content": "Registrar anotações sobre o livro atual — 2 novos capítulos concluídos.",
+      "createdAt": "2025-10-24T20:15:00Z"
+    }
+  ]
+}

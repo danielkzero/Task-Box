@@ -54,6 +54,8 @@
         <EditTaskModal v-model:isOpen="isEditTaskOpen" :task="task" @saved="handleTaskSave" />
 
         <EditDetailModal v-model:isOpen="isDetailModalOpen" :detail="selectedDetail" @saved="handleDetailSave" />
+
+        <ReagendarTaskModal v-model:isOpen="isReagendarModelOpen" :task="task" @saved="handleTaskSave" />
     </ion-page>
 </template>
 
@@ -71,11 +73,14 @@ import moment from 'moment';
 
 import EditTaskModal from '@/components/modals/EditTaskModal.vue'
 import EditDetailModal from '@/components/modals/EditDetailModal.vue'
+import ReagendarTaskModal from '@/components/modals/ReagendarTaskModal.vue';
 
 const isEditTaskOpen = ref(false)
 const isDetailModalOpen = ref(false)
 const selectedDetail = ref<TaskDetails | null>(null)
 
+// Abrir modal para reagendamento de tarefa
+const isReagendarModelOpen = ref(false)
 
 
 
@@ -101,11 +106,19 @@ async function openTaskActions() {
 
     // Mostra "Renomear" apenas se a tarefa NÃO estiver concluída
     if (!task.value?.done) {
-        buttons.push({
-            text: 'Editar',
-            icon: 'create-outline',
-            handler: () => editTaskPrompt()
-        });
+
+        buttons.push(
+            {
+                text: 'Reagendar',
+                icon: 'calendar-number-outline',
+                handler: () => editScheduledFor()
+            },
+            {
+                text: 'Editar',
+                icon: 'create-outline',
+                handler: () => editTaskPrompt()
+            },
+        );
     }
 
     // Sempre adiciona "Excluir" e "Cancelar"
@@ -131,32 +144,36 @@ async function openTaskActions() {
 
 
 function editTaskPrompt() {
-  isEditTaskOpen.value = true
+    isEditTaskOpen.value = true
 }
 
 async function handleTaskSave(updated: Task) {
-  if (!updated) return
-  await service.updateTask(updated)
-  task.value = updated
+    if (!updated) return
+    await service.updateTask(updated)
+    task.value = updated
 }
 
 function addDetailPrompt() {
-  selectedDetail.value = new TaskDetails(undefined, taskId, '', new Date())
-  isDetailModalOpen.value = true
+    selectedDetail.value = new TaskDetails(undefined, taskId, '', new Date())
+    isDetailModalOpen.value = true
 }
 
 function editDetail(detail: TaskDetails) {
-  selectedDetail.value = detail
-  isDetailModalOpen.value = true
+    selectedDetail.value = detail
+    isDetailModalOpen.value = true
+}
+// Reagendamento de tarefa
+async function editScheduledFor() {
+    isReagendarModelOpen.value = true
 }
 
 async function handleDetailSave(detail: TaskDetails) {
-  if (detail.id) {
-    await service.updateTaskDetail(detail)
-  } else {
-    await service.addTaskDetail(detail)
-  }
-  await loadDetails()
+    if (detail.id) {
+        await service.updateTaskDetail(detail)
+    } else {
+        await service.addTaskDetail(detail)
+    }
+    await loadDetails()
 }
 
 async function openDetailActions(detail: TaskDetails) {

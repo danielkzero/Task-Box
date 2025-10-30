@@ -9,11 +9,13 @@ import moment from "moment";
 export class TaskDB extends Dexie {
   tasks!: Table<Task, number>;
   lists!: Table<TaskList, number>;
+  taskDetails!: Table<TaskDetails, number>;
 
   constructor() {
     super("TaskDB");
-    this.version(8).stores({
-      tasks: "++id,title,done,listId,createdAt,scheduledFor",
+    // versão atualizada (sem schedules)
+    this.version(10).stores({
+      tasks: "++id,title,done,listId,createdAt,scheduledFor,idTaskParent",
       lists: "++id,name",
       taskDetails: "++id,taskId,content,createdAt",
     });
@@ -23,29 +25,28 @@ export class TaskDB extends Dexie {
 export class TaskService {
   public db = new TaskDB();
 
-  // --- Listas de tarefas ---
+  // --- Listas ---
   async listLists(): Promise<TaskList[]> {
     return this.db.lists.toArray();
   }
-  // Adicionar nova lista
+
   async addList(list: TaskList) {
     return this.db.lists.add(list);
   }
-  // Alterar uma lista
+
   async updateList(list: TaskList) {
     const plain = { id: list.id, name: list.name };
     return this.db.lists.put(plain);
   }
-  // Excluir uma lista
+
   async deleteList(id: number) {
-    // Deleta todas as tasks da lista
+    // Excluir todas as tasks associadas
     const tasksToDelete = await this.db.tasks
       .where("listId")
       .equals(id)
       .toArray();
     await Promise.all(tasksToDelete.map((t) => this.deleteTask(t.id!)));
 
-    // Deleta a própria lista
     return this.db.lists.delete(id);
   }
 
@@ -54,16 +55,13 @@ export class TaskService {
     if (!listId) return this.db.tasks.toArray();
     return this.db.tasks.where("listId").equals(listId).toArray();
   }
-  // Adicionar uma tarefa
+
   async addTask(task: Task) {
     const id = await this.db.tasks.add(task);
-
     await this.scheduleNotification(task, id);
-
     return id;
   }
 
-  // Alterar uma tarefa
   async updateTask(task: Task) {
     const plain = {
       id: task.id,
@@ -75,31 +73,37 @@ export class TaskService {
       remindBefore: task.remindBefore,
       repeatEvery: task.repeatEvery,
       priority: task.priority,
+      idTaskParent: task.idTaskParent,
     };
 
     const updatedId = await this.db.tasks.put(plain);
 
-    // Cancelar notificação antiga (se existir)
+    // Cancelar e reagendar notificações
     await LocalNotifications.cancel({ notifications: [{ id: task.id! }] });
-
-    // Re-agendar somente se a data for futura
     await this.scheduleNotification(task, task.id!);
 
     return updatedId;
   }
-  // Excluir uma tarefa
+
   async deleteTask(id: number) {
-    return this.db.tasks.delete(id);
+    await this.db.tasks.delete(id);
+    // Também remove filhos (instâncias recorrentes)
+    await this.db.tasks.where("idTaskParent").equals(id).delete();
   }
-  // Concluir uma tarefa
+
   async toggleTask(id: number) {
     const task = await this.db.tasks.get(id);
-    if (task) {
-      task.done = !task.done;
-      await this.updateTask(task);
+    if (!task) return;
+
+    task.done = !task.done;
+    await this.updateTask(task);
+
+    // Se for tarefa concluída e tiver repetição, gerar nova instância
+    if (task.done && task.repeatEvery && !task.idTaskParent) {
+      await this.generateNextInstance(task);
     }
   }
-  // Excluir tarefas concluídas
+
   async deleteCompletedTasks(listId?: number): Promise<void> {
     if (listId == null) return;
     const doneTasks = await this.db.tasks
@@ -107,7 +111,43 @@ export class TaskService {
       .toArray();
     await Promise.all(doneTasks.map((t) => this.deleteTask(t.id!)));
   }
-  // --- TaskDetails ---
+
+  // === Buscar tarefa por ID ===
+  async getTaskById(id: number) {
+    return this.db.tasks.get(id);
+  }
+
+  // === Buscar tarefas-filhas de uma tarefa pai ===
+  async getTasksByParent(parentId: number) {
+    return this.db.tasks.where("idTaskParent").equals(parentId).toArray();
+  }
+
+  // --- Tarefas Filhas (instâncias recorrentes) ---
+  private async generateNextInstance(parent: Task) {
+    if (!parent.scheduledFor || !parent.repeatEvery) return;
+
+    const nextDate = moment(parent.scheduledFor)
+      .add(parent.repeatEvery, "days") // futuramente pode ser “hours” ou “weeks”
+      .toDate();
+
+    const newTask = new Task(
+      undefined,
+      parent.title,
+      false,
+      parent.listId,
+      moment().toDate(),
+      nextDate,
+      parent.remindBefore,
+      parent.repeatEvery,
+      parent.priority,
+      parent.id // <-- liga ao pai
+    );
+
+    const newId = await this.db.tasks.add(newTask);
+    await this.scheduleNotification(newTask, newId);
+  }
+
+  // --- Detalhes ---
   async listTaskDetails(taskId?: number): Promise<TaskDetails[]> {
     if (!taskId) return this.db.table("taskDetails").toArray();
     return this.db
@@ -117,41 +157,47 @@ export class TaskService {
       .toArray();
   }
 
-  // Adicionar detalhes de uma tarefa
   async addTaskDetail(detail: TaskDetails) {
     return this.db.table("taskDetails").add(detail);
   }
-  // Alterar detalhes de uma tarefa
+
   async updateTaskDetail(detail: TaskDetails) {
     return this.db.table("taskDetails").put(detail);
   }
-  // Deletar detalhes de uma tarefa
+
   async deleteTaskDetail(id: number) {
     return this.db.table("taskDetails").delete(id);
   }
 
-  // Função helper para agendar notificação
-  private async scheduleNotification(task: Task, id: number) {
-    if (!task.scheduledFor) return;
+  // --- Notificações ---
+  private async scheduleNotification(
+    task: Task,
+    id: number,
+    scheduledFor: Date | undefined = undefined
+  ) {
+    const target = scheduledFor || task.scheduledFor;
+    if (!target) return;
 
     const now = new Date();
-    const scheduled = moment(task.scheduledFor).local().toDate();
+    const scheduled = moment(target).local().toDate();
+
     const date = new Date(
       scheduled.getTime() - (task.remindBefore ?? 15) * 60000
     );
 
-    // Não agenda se a data já passou
+    // Não agenda se já passou
     if (date <= now) return;
 
     await LocalNotifications.schedule({
       notifications: [
         {
-          id: id,
+          id,
           title: "Lembrete",
           body: `📅 ${task.title}`,
-          schedule: { at: date, repeats: !!task.repeatEvery, every: "minute" },
-          sound: "assets/sounds/bell.wav",
-          smallIcon: "res://icon",
+          schedule: { at: date },
+          sound: "bell.wav",
+          smallIcon: "res://ic_notification",
+          iconColor: "#177fec",
         },
       ],
     });

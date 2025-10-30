@@ -8,12 +8,15 @@ const service = new TaskService();
 export function useTasks(selectedListId: any) {
   const tasks = ref<Task[]>([]);
   const sortMode = ref<"order" | "date" | "priority">("date");
-  const sortDirection = ref<"asc" | "desc">("asc"); 
+  const sortDirection = ref<"asc" | "desc">("asc");
 
+  // Ordenação por prioridade (ainda futura)
   const sortByPriority = (tasks: Task[]) => {
     const order = { Urgente: 0, Importante: 1, Normal: 2 };
     return tasks.slice().sort((a, b) => {
-      const diff = order[a.priority] - order[b.priority];
+      const aValue = order[a.priority ?? "Normal"];
+      const bValue = order[b.priority ?? "Normal"];
+      const diff = aValue - bValue;
       return sortDirection.value === "asc" ? diff : -diff;
     });
   };
@@ -45,32 +48,35 @@ export function useTasks(selectedListId: any) {
     return result;
   });
 
-  // Alternar o modo de ordenação e direção
+  // Alternar modo de ordenação e direção
   function setSortMode(mode: "order" | "date" | "priority") {
     if (sortMode.value === mode) {
-      // mesmo modo → inverte a direção
       sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
     } else {
-      // modo novo → define ascendente por padrão
       sortMode.value = mode;
       sortDirection.value = "asc";
     }
   }
 
-  // Tarefas derivadas
-  const pendingTasks = computed(() => sortedTasks.value.filter((t) => !t.done));
+  // Separação de tarefas concluídas e pendentes
+  const pendingTasks = computed(() =>
+    sortedTasks.value.filter((t) => !t.done)
+  );
   const completedTasks = computed(() =>
     sortedTasks.value.filter((t) => t.done)
   );
 
-  // Métodos
+  // --- Métodos principais ---
+
   async function loadTasks() {
     if (!selectedListId.value) return;
     const list = await service.listTasks(selectedListId.value);
-    tasks.value = list.map(t => ({
-    ...t,
-    scheduledFor: t.scheduledFor ? moment(t.scheduledFor).local().toDate() : undefined,
-  }));
+    tasks.value = list.map((t) => ({
+      ...t,
+      scheduledFor: t.scheduledFor
+        ? moment(t.scheduledFor).local().toDate()
+        : undefined,
+    }));
   }
 
   async function toggle(id?: number) {
@@ -101,8 +107,8 @@ export function useTasks(selectedListId: any) {
     pendingTasks,
     completedTasks,
     sortMode,
-    sortDirection, 
-    setSortMode,  
+    sortDirection,
+    setSortMode,
     loadTasks,
     toggle,
     addTask,
