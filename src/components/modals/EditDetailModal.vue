@@ -60,23 +60,33 @@ const relatedTasks = ref<any[]>([]); // aqui guardamos pai + filhos (quando exis
 
 async function findParentAndChildren(taskId: number) {
     const relatedTasks: any[] = [];
-
+console.log('id' + taskId)
     const task = await service.getTaskById(taskId);
     if (!task) return relatedTasks;
 
-    // Se tiver pai, adiciona o pai
+    
+
+    // Adiciona a própria tarefa
+    relatedTasks.push(task);
+
+    // Se tiver pai, busca e adiciona
     if (task.idTaskParent) {
         const parent = await service.getTaskById(task.idTaskParent);
         if (parent) relatedTasks.push(parent);
     }
 
-    // Busca filhos (se for pai)
+    // Busca filhos (se existirem)
     const children = await service.getTasksByParent(task.id!);
     if (children && children.length > 0) {
         relatedTasks.push(...children);
     }
 
-    return relatedTasks;
+    // Remove duplicados (por segurança)
+    const uniqueTasks = relatedTasks.filter(
+        (t, i, self) => i === self.findIndex((x) => x.id === t.id)
+    );
+
+    return uniqueTasks;
 }
 
 watch(
