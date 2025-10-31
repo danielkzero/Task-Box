@@ -24,18 +24,29 @@
                     <ion-input v-model="form.time" type="time" />
                 </ion-item>
 
-                <ion-item>
+                <!-- ======== AVISAR QUANTOS MINUTOS ANTES ======== -->
+                <ion-item lines="none">
                     <ion-label position="stacked">Avisar quantos minutos antes?</ion-label>
-                    <ion-input v-model.number="form.remindBefore" type="number" placeholder="15" inputmode="numeric" pattern="[0-9]" />
                 </ion-item>
 
-                <ion-item>
-                    <ion-label position="stacked">Repetir a cada (minutos)</ion-label>
-                    <ion-input v-model.number="form.repeatEvery" type="number" placeholder="0" inputmode="numeric" pattern="[0-9]" />
+                <div class="option-buttons">
+                    <ion-button v-for="option in remindOptions" :key="option.value"
+                        :fill="form.remindBefore === option.value ? 'solid' : 'outline'" color="primary" shape="round"
+                        @click="selectRemind(option)">
+                        {{ option.label }}
+                    </ion-button>
+                </div>
+
+                <ion-item v-if="form.remindBefore === -1">
+                    <ion-label position="stacked">Personalizar (minutos)</ion-label>
+                    <ion-input v-model.number="customRemind" type="number" placeholder="Digite os minutos"
+                        inputmode="numeric" />
                 </ion-item>
             </ion-list>
 
-            <ion-button expand="block" @click="saveTask">Salvar</ion-button>
+            <ion-button expand="block" class="ion-margin-top" @click="saveTask">
+                Salvar
+            </ion-button>
         </ion-content>
     </ion-modal>
 </template>
@@ -48,27 +59,36 @@ import moment from 'moment'
 const props = defineProps<{ isOpen: boolean; task: Task | null | undefined }>()
 const emits = defineEmits(['update:isOpen', 'saved'])
 
+const remindOptions = [
+    { label: '30 minutos antes', value: 30 },
+    { label: '15 minutos antes', value: 15 },
+    { label: '5 minutos antes', value: 5 },
+    { label: 'Personalizar', value: -1 },
+]
+
 const form = ref({
-    title: '',
     date: '',
     time: '',
     remindBefore: 15,
-    repeatEvery: 0,
 })
 
-// Atualiza formulário quando o modal abre com tarefa existente
+const customRemind = ref<number | null>(null)
+
+function selectRemind(option: any) {
+    form.value.remindBefore = option.value
+}
+
 watch(
     () => props.task,
     (task) => {
         if (task) {
             const scheduled = task.scheduledFor ? moment(task.scheduledFor) : null
             form.value = {
-                title: task.title,
                 date: scheduled ? scheduled.format('YYYY-MM-DD') : '',
                 time: scheduled ? scheduled.format('HH:mm') : '',
-                remindBefore: 15,
-                repeatEvery: 0,
+                remindBefore: task.remindBefore ?? 15,
             }
+            customRemind.value = task.remindBefore ?? 15
         }
     },
     { immediate: true }
@@ -77,10 +97,9 @@ watch(
 const close = () => emits('update:isOpen', false)
 
 async function saveTask() {
-    if (!props.task || !form.value.title.trim()) return
+    if (!props.task) return
 
-    const updated = { ...props.task }
-    updated.title = form.value.title
+    const updated: Task = { ...props.task }
 
     if (form.value.date) {
         updated.scheduledFor = moment(`${form.value.date} ${form.value.time || '00:00'}`).toDate()
@@ -88,7 +107,20 @@ async function saveTask() {
         updated.scheduledFor = undefined
     }
 
+    updated.remindBefore =
+        form.value.remindBefore === -1 ? customRemind.value || 15 : form.value.remindBefore
+
     emits('saved', updated)
     close()
 }
 </script>
+
+<style scoped>
+.option-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.5rem 0 0.8rem 0;
+    justify-content: space-between;
+}
+</style>

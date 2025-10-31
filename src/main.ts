@@ -64,7 +64,7 @@ import {
   IonModal,
   IonTextarea,
   IonSelectOption,
-  IonSelect
+  IonSelect,
 } from "@ionic/vue";
 
 // Ionic Icons
@@ -82,7 +82,7 @@ import {
   calendarOutline,
   alertCircleOutline,
   calendarNumberOutline,
-  newspaperOutline
+  newspaperOutline,
 } from "ionicons/icons";
 
 // Registra ícones globalmente
@@ -99,7 +99,7 @@ addIcons({
   "calendar-outline": calendarOutline,
   "alert-circle-outline": alertCircleOutline,
   "calendar-number-outline": calendarNumberOutline,
-  "newspaper-outline": newspaperOutline
+  "newspaper-outline": newspaperOutline,
 });
 
 // Notificações do capacitor
@@ -116,13 +116,15 @@ async function requestNotificationPermission() {
 requestNotificationPermission();
 
 LocalNotifications.addListener(
-  'localNotificationActionPerformed',
+  "localNotificationActionPerformed",
   (notification) => {
     const taskId = notification.notification.id;
     router.push(`/detalhes-tarefa/${taskId}`);
   }
 );
 
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { Capacitor } from "@capacitor/core";
 
 const app = createApp(App)
   .use(IonicVue)
@@ -158,8 +160,26 @@ const app = createApp(App)
   .component("IonSelectOption", IonSelectOption)
   .component("IonSelect", IonSelect);
 
-  
+router.isReady().then(async () => {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      await StatusBar.setOverlaysWebView({ overlay: false });
 
-router.isReady().then(() => {
+      // Detecta tema do usuário
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      if (prefersDark) {
+        await StatusBar.setStyle({ style: Style.Dark });
+        await StatusBar.setBackgroundColor({ color: '#000000' });
+      } else {
+        await StatusBar.setStyle({ style: Style.Light });
+        await StatusBar.setBackgroundColor({ color: '#ffffff' });
+      }
+
+    } catch (err) {
+      console.warn("Falha ao configurar StatusBar", err);
+    }
+  }
+
   app.mount("#app");
 });

@@ -22,7 +22,7 @@
             </ion-item>
 
             <!-- aparece só se a task tem pai ou filhos -->
-            <ion-item v-if="tasksUnicas.length > 0" lines="none">
+            <ion-item v-if="tasksUnicas.length > 1" lines="none">
                 <ion-checkbox v-model="replicate" justify="start">
                     Replicar nas cópias
                 </ion-checkbox>
