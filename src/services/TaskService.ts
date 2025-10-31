@@ -114,7 +114,7 @@ export class TaskService {
 
   // === Buscar tarefa por ID ===
   async getTaskById(id: number) {
-    return this.db.tasks.get(id);
+    return this.db.tasks.where("id").equals(id).toArray();
   }
 
   // === Buscar tarefas-filhas de uma tarefa pai ===
@@ -167,6 +167,16 @@ export class TaskService {
 
   async deleteTaskDetail(id: number) {
     return this.db.table("taskDetails").delete(id);
+  }
+
+  async saveTaskDetail(detail: TaskDetails) {
+    if (detail?.id) {
+      // Atualiza
+      await this.db.taskDetails.put(detail);
+    } else {
+      // Cria novo
+      await this.db.taskDetails.add(detail);
+    }
   }
 
   // --- Notificações ---

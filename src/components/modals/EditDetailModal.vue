@@ -7,6 +7,7 @@
                     <ion-icon name="newspaper-outline" v-else></ion-icon>
 
                     {{ detail?.id ? 'Editar Detalhe' : 'Novo Detalhe' }}
+                    
                 </ion-title>
                 <ion-buttons slot="end">
                     <ion-button @click="close">Fechar</ion-button>
@@ -21,7 +22,7 @@
             </ion-item>
 
             <!-- aparece só se a task tem pai ou filhos -->
-            <ion-item v-if="relatedTasks.length > 0" lines="none">
+            <ion-item v-if="tasksUnicas.length > 0" lines="none">
                 <ion-checkbox v-model="replicate" justify="start">
                     Replicar nas cópias
                 </ion-checkbox>
@@ -37,6 +38,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { TaskDetails } from '@/models/TaskDetails'
+import { Task } from '@/models/Task'
 import { TaskService } from "@/services/TaskService";
 
 const service = new TaskService();
@@ -44,6 +46,7 @@ const service = new TaskService();
 const props = defineProps<{
     isOpen: boolean
     detail: TaskDetails | null
+    myTask: Task | null | undefined
 }>()
 
 const emits = defineEmits(['update:isOpen', 'saved'])
@@ -56,15 +59,13 @@ const localDetail = ref<TaskDetails>({
 
 // ===== Estados auxiliares =====
 const replicate = ref(false);
-const relatedTasks = ref<any[]>([]); // aqui guardamos pai + filhos (quando existirem)
+const relatedTasks = ref<any[]>([]); 
+const tasksUnicas = ref<any[]>([]);
 
-async function findParentAndChildren(taskId: number) {
+async function findParentAndChildren(task: Task) {
     const relatedTasks: any[] = [];
-console.log('id' + taskId)
-    const task = await service.getTaskById(taskId);
-    if (!task) return relatedTasks;
-
-    
+   
+    if (!task) return relatedTasks; 
 
     // Adiciona a própria tarefa
     relatedTasks.push(task);
@@ -86,7 +87,7 @@ console.log('id' + taskId)
         (t, i, self) => i === self.findIndex((x) => x.id === t.id)
     );
 
-    return uniqueTasks;
+    tasksUnicas.value = uniqueTasks;
 }
 
 watch(
@@ -95,17 +96,51 @@ watch(
         if (newVal) localDetail.value = { ...newVal }
     }
 )
+watch(
+    async () => props.myTask,
+    async () => {
+        if (props.myTask) await findParentAndChildren(props.myTask);
+    },
+    { immediate: true }
+)
 
 onMounted(async () => {
-    if (props.detail?.id) await findParentAndChildren(props.detail?.id);
+    
 });
 
 function close() {
     emits('update:isOpen', false)
 }
 
-function save() {
-    emits('saved', { ...localDetail.value })
+async function save() {
+    if (!localDetail.value.content?.trim()) {
+        // Evita salvar detalhe vazio
+        return;
+    }
+
+    if (replicate.value && tasksUnicas.value.length > 0) {
+        // Replicar em todas as tarefas relacionadas
+        for (const task of tasksUnicas.value) {
+            const detailCopy: TaskDetails = {
+                ...localDetail.value,
+                id: undefined, // garante novo registro
+                taskId: task.id, // vincula à tarefa correta
+                createdAt: new Date(),
+            };
+            await service.saveTaskDetail(detailCopy);
+        }
+    } else {
+        // Salva só para a tarefa atual
+        const detailCopy: TaskDetails = {
+            ...localDetail.value,
+            taskId: props.myTask?.id!,
+            createdAt: new Date(),
+        };
+        await service.saveTaskDetail(detailCopy);
+    }
+
+    emits('saved'); // notifica o componente pai
+    //emits('saved', { ...localDetail.value })
     close()
 }
 </script>

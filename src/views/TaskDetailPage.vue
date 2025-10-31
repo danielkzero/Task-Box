@@ -53,7 +53,7 @@
 
         <EditTaskModal v-model:isOpen="isEditTaskOpen" :task="task" @saved="handleTaskSave" />
 
-        <EditDetailModal v-model:isOpen="isDetailModalOpen" :detail="selectedDetail" @saved="handleDetailSave" />
+        <EditDetailModal v-model:isOpen="isDetailModalOpen" :myTask="task" :detail="selectedDetail" @saved="handleDetailSave" />
 
         <ReagendarTaskModal v-model:isOpen="isReagendarModelOpen" :task="task" @saved="handleTaskSave" />
     </ion-page>
@@ -168,11 +168,11 @@ async function editScheduledFor() {
 }
 
 async function handleDetailSave(detail: TaskDetails) {
-    if (detail.id) {
+    /*if (detail.id) {
         await service.updateTaskDetail(detail)
     } else {
         await service.addTaskDetail(detail)
-    }
+    }*/
     await loadDetails()
 }
 
